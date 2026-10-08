@@ -83,8 +83,8 @@
                         @if($record->sprint)
                             {{ $record->sprint->name }}
                             <span class="text-xs text-gray-400">
-                                {{ __('Starts at:') }} {{ $record->sprint->starts_at->format(__('Y-m-d')) }} -
-                                {{ __('Ends at:') }} {{ $record->sprint->ends_at->format(__('Y-m-d')) }}
+                                {{ __('Starts at:') }} {{ $record->sprint->starts_at->format('d/m/Y') }} -
+                                {{ __('Ends at:') }} {{ $record->sprint->ends_at->format('d/m/Y') }}
                             </span>
                         @else
                             -
@@ -113,6 +113,23 @@
                 <div class="w-full flex items-center gap-1 text-gray-500">
                     @if($record->estimation)
                         {{ $record->estimationForHumans }}
+                    @else
+                        -
+                    @endif
+                </div>
+            </div>
+
+            <div class="w-full flex flex-col gap-1 pt-3">
+                <span class="text-gray-500 text-sm font-medium">
+                    {{ __('Due date') }}
+                </span>
+                <div class="w-full flex items-center gap-1
+                    {{ $record->dueDateStatus === 'overdue' ? 'text-danger-700' : ($record->dueDateStatus === 'soon' ? 'text-warning-700' : 'text-gray-500') }}">
+                    @if($record->due_date)
+                        {{ $record->due_date->format('d/m/Y') }}
+                        @if($record->dueDateStatus === 'overdue')
+                            ({{ __('Overdue') }})
+                        @endif
                     @else
                         -
                     @endif

@@ -72,6 +72,7 @@ class ImportJiraTicketsJob implements ShouldQueue
                     'project_id' => $project->id,
                     'type_id' => TicketType::where('is_default', true)->first()->id,
                     'priority_id' => TicketPriority::where('is_default', true)->first()->id,
+                    'due_date' => $ticketData->duedate ?? null,
                 ]);
             }
             FilamentNotification::make()

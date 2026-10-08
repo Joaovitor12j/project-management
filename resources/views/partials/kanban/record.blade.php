@@ -26,6 +26,7 @@
             @endif
             <x-ticket-priority :priority="$record['priority']" />
             <x-ticket-type :type="$record['type']" />
+            <x-ticket-due-date :dueDate="$record['dueDate']" :status="$record['dueDateStatus']" />
         </div>
         @if($record['responsible'])
             <x-user-avatar :user="$record['responsible']" />

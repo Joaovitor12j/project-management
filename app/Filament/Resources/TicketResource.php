@@ -19,6 +19,7 @@ use Filament\Resources\Pages\EditRecord;
 use Filament\Resources\Resource;
 use Filament\Resources\Table;
 use Filament\Tables;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\HtmlString;
 
 class TicketResource extends Resource
@@ -187,6 +188,10 @@ class TicketResource extends Resource
                                     ->label(__('Estimation time'))
                                     ->numeric()
                                     ->columnSpan(2),
+
+                                Forms\Components\DatePicker::make('due_date')
+                                    ->label(__('Due date'))
+                                    ->columnSpan(3),
                             ]),
 
                         Forms\Components\Repeater::make('relations')
@@ -293,6 +298,16 @@ class TicketResource extends Resource
                 ->sortable()
                 ->searchable(),
 
+            Tables\Columns\TextColumn::make('due_date')
+                ->label(__('Due date'))
+                ->date()
+                ->color(fn($record) => match ($record->dueDateStatus) {
+                    'overdue' => 'danger',
+                    'soon' => 'warning',
+                    default => null,
+                })
+                ->sortable(),
+
             Tables\Columns\TextColumn::make('created_at')
                 ->label(__('Created at'))
                 ->dateTime()
@@ -339,6 +354,10 @@ class TicketResource extends Resource
                     ->label(__('Priority'))
                     ->multiple()
                     ->options(fn() => TicketPriority::all()->pluck('name', 'id')->toArray()),
+
+                Tables\Filters\Filter::make('overdue')
+                    ->label(__('Overdue'))
+                    ->query(fn(Builder $query) => $query->whereDate('due_date', '<', now()->toDateString())),
             ])
             ->actions([
                 Tables\Actions\ViewAction::make(),

@@ -22,7 +22,11 @@ class Ticket extends Model implements HasMedia
     protected $fillable = [
         'name', 'content', 'owner_id', 'responsible_id',
         'status_id', 'project_id', 'code', 'order', 'type_id',
-        'priority_id', 'estimation', 'epic_id', 'sprint_id'
+        'priority_id', 'estimation', 'epic_id', 'sprint_id', 'due_date'
+    ];
+
+    protected $casts = [
+        'due_date' => 'date',
     ];
 
     public static function boot()
@@ -211,6 +215,24 @@ class Ticket extends Model implements HasMedia
         return new Attribute(
             get: function () {
                 return (($this->totalLoggedSeconds ?? 0) / ($this->estimationInSeconds ?? 1)) * 100;
+            }
+        );
+    }
+
+    public function dueDateStatus(): Attribute
+    {
+        return new Attribute(
+            get: function () {
+                if (!$this->due_date) {
+                    return null;
+                }
+                if ($this->due_date->isPast() && !$this->due_date->isToday()) {
+                    return 'overdue';
+                }
+                if ($this->due_date->diffInDays(now()->startOfDay()) <= 2) {
+                    return 'soon';
+                }
+                return null;
             }
         );
     }
